@@ -113,7 +113,7 @@ export const repoRevContainerRoutes: ReadonlyArray<RepoRevContainerRoute> = [
                                     location={context.location}
                                     history={context.history}
                                     isLightTheme={context.isLightTheme}
-                                    activation={context.activation}
+                                    activation2={context.activation2}
                                 />
                             )}
                         </div>

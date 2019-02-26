@@ -124,7 +124,7 @@ export class ActivationDropdown extends React.PureComponent<Props, State> {
                     this.state.completed &&
                     percentageDone(completed) > percentageDone(this.state.completed)
                 ) {
-                    // Completition was loaded and is being updated
+                    // Completion was loaded and is being updated
                     this.setState({ completed, animate: true })
                     setTimeout(() => {
                         if (percentageDone(this.state.completed) >= 100) {

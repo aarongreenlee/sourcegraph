@@ -6,7 +6,7 @@ import * as React from 'react'
 import { Route } from 'react-router'
 import { BrowserRouter } from 'react-router-dom'
 import { combineLatest, from, Subscription } from 'rxjs'
-import { Observable } from 'rxjs'
+import { Observable, Subject } from 'rxjs'
 import { first, map, startWith } from 'rxjs/operators'
 import { Activation2, ActivationProps, ActivationStep } from '../../shared/src/components/activation/Activation'
 import { setLinkComponent } from '../../shared/src/components/Link'
@@ -124,57 +124,77 @@ export class SourcegraphWebApp extends React.Component<SourcegraphWebAppProps, S
 
     private createActivationStatus2(isSiteAdmin: boolean): Pick<Activation2, 'steps' | 'update' | 'refetch'> {
         const fetcher = fetchActivationStatus(isSiteAdmin)
+        const firstFetched = new Promise<void>(resolve => {
+            fetcher()
+                .pipe(first())
+                .subscribe(completed => {
+                    this.setState({ activation2Completed: completed })
+                    resolve()
+                })
+        })
+        const steps = [
+            {
+                id: 'connectedCodeHost',
+                title: 'Connect your code host',
+                detail: 'Configure Sourcegraph to talk to your code host and fetch a list of your repositories.',
+                action: (h: H.History) => h.push('/site-admin/external-services'),
+                siteAdminOnly: true,
+            },
+            {
+                id: 'enabledRepository',
+                title: 'Enable repositories',
+                detail: 'Select which repositories Sourcegraph should pull and index from your code host(s).',
+                action: (h: H.History) => h.push('/site-admin/repositories'),
+                siteAdminOnly: true,
+            },
+            {
+                id: 'didSearch',
+                title: 'Search your code',
+                detail: 'Perform a search query on your code.',
+                action: (h: H.History) => h.push('/search'),
+            },
+            {
+                id: 'action:findReferences',
+                title: 'Find some references',
+                detail:
+                    'To find references of a token, navigate to a code file in one of your repositories, hover over a token to activate the tooltip, and then click "Find references".',
+                action: (h: H.History) =>
+                    fetchReferencesLink()
+                        .pipe(first())
+                        .subscribe(r => {
+                            if (r) {
+                                h.push(r)
+                            } else {
+                                alert('Must add repositories before finding references')
+                            }
+                        }),
+            },
+            {
+                id: 'enabledSignOn',
+                title: 'Configure SSO or share with teammates',
+                detail: 'Configure a single-sign on (SSO) provider or have at least one other teammate sign up.',
+                action: () => window.open('https://docs.sourcegraph.com/admin/auth', '_blank'),
+                siteAdminOnly: true,
+            },
+        ]
+            .filter(e => true || !e.siteAdminOnly)
+            .map(e => pick<any, keyof ActivationStep>(e, 'id', 'title', 'detail', 'action'))
+
         const s = {
-            steps: [
-                {
-                    id: 'connectedCodeHost',
-                    title: 'Connect your code host',
-                    detail: 'Configure Sourcegraph to talk to your code host and fetch a list of your repositories.',
-                    action: (h: H.History) => h.push('/site-admin/external-services'),
-                    siteAdminOnly: true,
-                },
-                {
-                    id: 'enabledRepository',
-                    title: 'Enable repositories',
-                    detail: 'Select which repositories Sourcegraph should pull and index from your code host(s).',
-                    action: (h: H.History) => h.push('/site-admin/repositories'),
-                    siteAdminOnly: true,
-                },
-                {
-                    id: 'didSearch',
-                    title: 'Search your code',
-                    detail: 'Perform a search query on your code.',
-                    action: (h: H.History) => h.push('/search'),
-                },
-                {
-                    id: 'action:findReferences',
-                    title: 'Find some references',
-                    detail:
-                        'To find references of a token, navigate to a code file in one of your repositories, hover over a token to activate the tooltip, and then click "Find references".',
-                    action: (h: H.History) =>
-                        fetchReferencesLink()
-                            .pipe(first())
-                            .subscribe(r => {
-                                if (r) {
-                                    h.push(r)
-                                } else {
-                                    alert('Must add repositories before finding references')
-                                }
-                            }),
-                },
-                {
-                    id: 'enabledSignOn',
-                    title: 'Configure SSO or share with teammates',
-                    detail: 'Configure a single-sign on (SSO) provider or have at least one other teammate sign up.',
-                    action: () => window.open('https://docs.sourcegraph.com/admin/auth', '_blank'),
-                    siteAdminOnly: true,
-                },
-            ]
-                .filter(e => true || !e.siteAdminOnly)
-                .map(e => pick<any, keyof ActivationStep>(e, 'id', 'title', 'detail', 'action')),
+            steps,
             update: (u: { [key: string]: boolean }) => {
-                // TODO: NEXT
-                console.log('# TODO: update', u)
+                firstFetched.then(() => {
+                    // TODO: send update to server
+
+                    const newVal: { [key: string]: boolean } = {}
+                    Object.assign(newVal, this.state.activation2Completed)
+                    for (const step of steps) {
+                        if (u[step.id] !== undefined) {
+                            newVal[step.id] = u[step.id]
+                        }
+                    }
+                    this.setState({ activation2Completed: newVal })
+                })
             },
             refetch: () => {
                 fetcher()
@@ -182,7 +202,6 @@ export class SourcegraphWebApp extends React.Component<SourcegraphWebAppProps, S
                     .subscribe(c => this.setState({ activation2Completed: c }))
             },
         }
-        s.refetch()
         return s
     }
 

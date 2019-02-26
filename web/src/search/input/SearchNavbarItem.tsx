@@ -1,12 +1,12 @@
 import * as H from 'history'
 import * as React from 'react'
-import { ActivationProps } from '../../../../shared/src/components/activation/Activation'
+import { ActivationProps2 } from '../../../../shared/src/components/activation/Activation'
 import { Form } from '../../components/Form'
 import { submitSearch } from '../helpers'
 import { QueryInput } from './QueryInput'
 import { SearchButton } from './SearchButton'
 
-interface Props extends ActivationProps {
+interface Props extends ActivationProps2 {
     location: H.Location
     history: H.History
     navbarSearchQuery: string
@@ -31,7 +31,7 @@ export class SearchNavbarItem extends React.Component<Props> {
                     autoFocus={autoFocus ? 'cursor-at-end' : undefined}
                     hasGlobalQueryBehavior={true}
                 />
-                <SearchButton activation={this.props.activation} />
+                <SearchButton activation2={this.props.activation2} />
             </Form>
         )
     }

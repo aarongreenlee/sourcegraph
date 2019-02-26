@@ -3,9 +3,9 @@ import HelpCircleOutlineIcon from 'mdi-react/HelpCircleOutlineIcon'
 import SearchIcon from 'mdi-react/SearchIcon'
 import * as React from 'react'
 import { Dropdown, DropdownItem, DropdownMenu, DropdownToggle } from 'reactstrap'
-import { ActivationProps } from '../../../../shared/src/components/activation/Activation'
+import { ActivationProps2 } from '../../../../shared/src/components/activation/Activation'
 
-interface Props extends ActivationProps {
+interface Props extends ActivationProps2 {
     /** Hide the "help" icon and dropdown. */
     noHelp?: boolean
 
@@ -26,8 +26,8 @@ export class SearchButton extends React.Component<Props, State> {
     public state: State = { isOpen: false, didClick: false }
 
     private onClick = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
-        if (this.props.activation) {
-            this.props.activation.update({ didSearch: true })
+        if (this.props.activation2) {
+            this.props.activation2.update({ didSearch: true })
         }
     }
 

@@ -5,7 +5,7 @@ import * as React from 'react'
 import { Route, RouteComponentProps, Switch } from 'react-router'
 import { defer, Subject, Subscription } from 'rxjs'
 import { catchError, delay, distinctUntilChanged, map, retryWhen, switchMap, tap } from 'rxjs/operators'
-import { ActivationProps } from '../../../shared/src/components/activation/Activation'
+import { ActivationProps2 } from '../../../shared/src/components/activation/Activation'
 import { ExtensionsControllerProps } from '../../../shared/src/extensions/controller'
 import * as GQL from '../../../shared/src/graphql/schema'
 import { PlatformContextProps } from '../../../shared/src/platform/context'
@@ -30,7 +30,7 @@ export interface RepoRevContainerContext
         SettingsCascadeProps,
         ExtensionsControllerProps,
         PlatformContextProps,
-        ActivationProps {
+        ActivationProps2 {
     repo: GQL.IRepository
     rev: string
     authenticatedUser: GQL.IUser | null
@@ -47,7 +47,7 @@ interface RepoRevContainerProps
         SettingsCascadeProps,
         PlatformContextProps,
         ExtensionsControllerProps,
-        ActivationProps {
+        ActivationProps2 {
     routes: ReadonlyArray<RepoRevContainerRoute>
     repo: GQL.IRepository
     rev: string
@@ -194,7 +194,7 @@ export class RepoRevContainer extends React.PureComponent<RepoRevContainerProps,
             platformContext: this.props.platformContext,
             extensionsController: this.props.extensionsController,
             isLightTheme: this.props.isLightTheme,
-            activation: this.props.activation,
+            activation2: this.props.activation2,
             repo: this.props.repo,
             repoHeaderContributionsLifecycleProps: this.props.repoHeaderContributionsLifecycleProps,
             resolvedRev: this.props.resolvedRevOrError,
