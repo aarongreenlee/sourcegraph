@@ -2,6 +2,19 @@ import H from 'history'
 import { BehaviorSubject, Observable, Subject } from 'rxjs'
 import { first, pairwise } from 'rxjs/operators'
 
+export interface ActivationProps2 {
+    activation2?: Activation2
+}
+
+export interface Activation2 {
+    steps: ActivationStep[]
+    update: (u: { [key: string]: boolean }) => void
+    refetch: () => void
+    completed?: { [key: string]: boolean }
+}
+
+///////////////////////////////////////////
+
 /**
  * Each component that might update or display the activation status needs
  * to hold a reference to the ActivationStatus instance and its props

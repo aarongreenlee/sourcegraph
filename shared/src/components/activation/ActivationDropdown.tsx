@@ -4,10 +4,84 @@ import React from 'react'
 import CircularProgressbar from 'react-circular-progressbar'
 import { ButtonDropdown, DropdownItem, DropdownMenu, DropdownToggle } from 'reactstrap'
 import { Subscription } from 'rxjs'
-import { ActivationStatus, percentageDone } from './Activation'
+import { Activation2, ActivationStatus, percentageDone } from './Activation'
 import { ActivationChecklistItem } from './ActivationChecklist'
 
-export interface Props {
+interface Props2 {
+    history: H.History
+    activation?: Activation2
+}
+
+interface State2 {
+    isOpen: boolean
+    animate: boolean
+    show?: boolean
+}
+
+/**
+ * Renders the activation status navlink item, a dropdown button that shows activation
+ * status in the navbar.
+ */
+export class ActivationDropdown2 extends React.PureComponent<Props2, State2> {
+    public state: State = { isOpen: false, animate: false }
+
+    private toggleIsOpen = () => this.setState(prevState => ({ isOpen: !prevState.isOpen }))
+
+    public render(): JSX.Element {
+        return (
+            <ButtonDropdown
+                isOpen={this.state.isOpen}
+                toggle={this.toggleIsOpen}
+                className={`${this.state.show ? '' : 'activation-dropdown-button--hidden'} nav-link p-0`}
+            >
+                <DropdownToggle
+                    caret={false}
+                    className={`${
+                        this.state.animate ? 'animate' : ''
+                    } activation-dropdown-button__animated-button bg-transparent d-flex align-items-center e2e-user-nav-item-toggle`}
+                    nav={true}
+                >
+                    Setup
+                    <span className="activation-dropdown-button__progress-bar-container">
+                        <CircularProgressbar
+                            className="activation-dropdown-button__circular-progress-bar"
+                            strokeWidth={12}
+                            percentage={percentageDone(this.state.completed)}
+                        />
+                    </span>
+                </DropdownToggle>
+                <DropdownMenu right={true}>
+                    <DropdownItem header={true} className="py-1">
+                        <div className="activation-dropdown-header">
+                            <h2>
+                                <RocketIcon className="icon-inline" /> Hi there!
+                            </h2>
+                            <div>Complete the steps below to finish onboarding to Sourcegraph.</div>
+                        </div>
+                    </DropdownItem>
+                    <DropdownItem divider={true} />
+                    {this.props.activation && this.props.activation.completed ? (
+                        this.props.activation.steps.map(s => (
+                            <div key={s.id} className="dropdown-item" onClick={this.toggleIsOpen}>
+                                <ActivationChecklistItem
+                                    {...s}
+                                    history={this.props.history}
+                                    done={(this.state.completed && this.state.completed[s.id]) || false}
+                                />
+                            </div>
+                        ))
+                    ) : (
+                        <div>Loading...</div>
+                    )}
+                </DropdownMenu>
+            </ButtonDropdown>
+        )
+    }
+}
+
+////////////////////////////////////////////
+
+interface Props {
     history: H.History
     activation: ActivationStatus
 }
