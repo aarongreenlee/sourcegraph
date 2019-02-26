@@ -78,7 +78,7 @@ export class NavLinks extends React.PureComponent<Props> {
                 */}
                 {this.props.activation2 && (
                     <li className="nav-item">
-                        <ActivationDropdown2 activation={this.props.activation} history={this.props.history} />
+                        <ActivationDropdown2 activation={this.props.activation2} history={this.props.history} />
                     </li>
                 )}
                 {(!this.props.showDotComMarketing ||

@@ -133,6 +133,7 @@ export const Layout: React.FunctionComponent<LayoutProps> = props => {
                 <ResizablePanel
                     repoName={`git://${parseBrowserRepoURL(props.location.pathname).repoName}`}
                     activation={props.activation}
+                    activation2={props.activation2}
                     history={props.history}
                     location={props.location}
                     extensionsController={props.extensionsController}

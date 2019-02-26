@@ -9,13 +9,11 @@ import { ActivationChecklistItem } from './ActivationChecklist'
 
 interface Props2 {
     history: H.History
-    activation?: Activation2
+    activation: Activation2
 }
 
 interface State2 {
     isOpen: boolean
-    animate: boolean
-    show?: boolean
 }
 
 /**
@@ -28,16 +26,18 @@ export class ActivationDropdown2 extends React.PureComponent<Props2, State2> {
     private toggleIsOpen = () => this.setState(prevState => ({ isOpen: !prevState.isOpen }))
 
     public render(): JSX.Element {
+        const show = this.props.activation.justActivated || percentageDone(this.props.activation.completed) < 100
+        const animate = this.props.activation.justActivated || false
         return (
             <ButtonDropdown
                 isOpen={this.state.isOpen}
                 toggle={this.toggleIsOpen}
-                className={`${this.state.show ? '' : 'activation-dropdown-button--hidden'} nav-link p-0`}
+                className={`${show ? '' : 'activation-dropdown-button--hidden'} nav-link p-0`}
             >
                 <DropdownToggle
                     caret={false}
                     className={`${
-                        this.state.animate ? 'animate' : ''
+                        animate ? 'animate' : ''
                     } activation-dropdown-button__animated-button bg-transparent d-flex align-items-center e2e-user-nav-item-toggle`}
                     nav={true}
                 >
@@ -46,7 +46,7 @@ export class ActivationDropdown2 extends React.PureComponent<Props2, State2> {
                         <CircularProgressbar
                             className="activation-dropdown-button__circular-progress-bar"
                             strokeWidth={12}
-                            percentage={percentageDone(this.state.completed)}
+                            percentage={percentageDone(this.props.activation.completed)}
                         />
                     </span>
                 </DropdownToggle>
@@ -66,7 +66,10 @@ export class ActivationDropdown2 extends React.PureComponent<Props2, State2> {
                                 <ActivationChecklistItem
                                     {...s}
                                     history={this.props.history}
-                                    done={(this.state.completed && this.state.completed[s.id]) || false}
+                                    done={
+                                        (this.props.activation.completed && this.props.activation.completed[s.id]) ||
+                                        false
+                                    }
                                 />
                             </div>
                         ))

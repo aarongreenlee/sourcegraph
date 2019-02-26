@@ -124,7 +124,7 @@ export class SourcegraphWebApp extends React.Component<SourcegraphWebAppProps, S
 
     private createActivationStatus2(isSiteAdmin: boolean): Pick<Activation2, 'steps' | 'update' | 'refetch'> {
         const fetcher = fetchActivationStatus(isSiteAdmin)
-        return {
+        const s = {
             steps: [
                 {
                     id: 'connectedCodeHost',
@@ -172,13 +172,18 @@ export class SourcegraphWebApp extends React.Component<SourcegraphWebAppProps, S
             ]
                 .filter(e => true || !e.siteAdminOnly)
                 .map(e => pick<any, keyof ActivationStep>(e, 'id', 'title', 'detail', 'action')),
-            update: (u: { [key: string]: boolean }) => console.log('# TODO: update', u),
+            update: (u: { [key: string]: boolean }) => {
+                // TODO: NEXT
+                console.log('# TODO: update', u)
+            },
             refetch: () => {
                 fetcher()
                     .pipe(first())
                     .subscribe(c => this.setState({ activation2Completed: c }))
             },
         }
+        s.refetch()
+        return s
     }
 
     public componentDidMount(): void {
@@ -276,6 +281,14 @@ export class SourcegraphWebApp extends React.Component<SourcegraphWebAppProps, S
 
         const { children, ...props } = this.props
 
+        let activation2: Activation2 | undefined
+        if (this.state.activation2Completed && this.state.activation2) {
+            activation2 = {
+                ...this.state.activation2,
+                completed: this.state.activation2Completed,
+            }
+        }
+
         return (
             <ErrorBoundary location={null}>
                 <ShortcutProvider>
@@ -300,7 +313,9 @@ export class SourcegraphWebApp extends React.Component<SourcegraphWebAppProps, S
                                         // Extensions
                                         platformContext={this.state.platformContext}
                                         extensionsController={this.state.extensionsController}
+                                        // Activation
                                         activation={this.state.activation}
+                                        activation2={activation2}
                                     />
                                 )}
                             />

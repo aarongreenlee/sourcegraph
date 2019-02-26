@@ -11,6 +11,7 @@ export interface Activation2 {
     update: (u: { [key: string]: boolean }) => void
     refetch: () => void
     completed?: { [key: string]: boolean }
+    justActivated?: boolean // TODO: set properly
 }
 
 ///////////////////////////////////////////
